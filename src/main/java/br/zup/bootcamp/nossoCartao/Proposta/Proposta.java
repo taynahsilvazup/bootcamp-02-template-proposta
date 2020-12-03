@@ -1,4 +1,4 @@
-package Proposta;
+package br.zup.bootcamp.nossoCartao.Proposta;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "PROPOSTA")
@@ -15,7 +16,7 @@ public class Proposta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "DOCUMENTO")
+    @Column(name = "DOCUMENTO", unique = true)
     @NotBlank
     private String documento;
 
@@ -36,6 +37,9 @@ public class Proposta {
     @NotNull
     @Positive
     private BigDecimal salario;
+
+    @Column(name = "DATA_CADASTRO")
+    private final LocalDateTime dataCadastro = LocalDateTime.now();
 
     public Long getId() {
         return id;
@@ -69,7 +73,6 @@ public class Proposta {
                     @NotBlank @Email String email,
                     @NotBlank String nome, @NotBlank String endereco,
                     @NotNull @Positive BigDecimal salario) {
-        this.id = id;
         this.documento = documento;
         this.email = email;
         this.nome = nome;

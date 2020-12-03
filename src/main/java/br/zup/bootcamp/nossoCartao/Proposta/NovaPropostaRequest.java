@@ -1,6 +1,10 @@
-package Proposta;
+package br.zup.bootcamp.nossoCartao.Proposta;
 
-import javax.persistence.Column;
+import br.zup.bootcamp.nossoCartao.Validator.Unique;
+import org.hibernate.validator.internal.constraintvalidators.hv.br.CNPJValidator;
+import org.hibernate.validator.internal.constraintvalidators.hv.br.CPFValidator;
+import org.springframework.util.Assert;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -8,7 +12,6 @@ import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class NovaPropostaRequest {
-
     @NotBlank
     private String documento;
 
@@ -64,5 +67,19 @@ public class NovaPropostaRequest {
 
     public Proposta toModel() {
         return new Proposta(documento, email, nome, endereco, salario);
+    }
+
+    public boolean documentoValido() {
+        Assert.hasLength(documento, "Documento não informado.");
+
+        CPFValidator cpfValidator = new CPFValidator();
+        cpfValidator.initialize(null);
+
+        CNPJValidator cnpjValidator = new CNPJValidator();
+        cnpjValidator.initialize(null);
+
+        return cpfValidator.isValid(documento, null)
+                || cnpjValidator.isValid(documento, null);
+
     }
 }
