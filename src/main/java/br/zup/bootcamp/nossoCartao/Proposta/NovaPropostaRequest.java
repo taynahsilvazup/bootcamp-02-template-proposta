@@ -1,5 +1,6 @@
 package br.zup.bootcamp.nossoCartao.Proposta;
 
+import br.zup.bootcamp.nossoCartao.Proposta.Enum.StatusPropostaEnum;
 import br.zup.bootcamp.nossoCartao.Validator.Unique;
 import org.hibernate.validator.internal.constraintvalidators.hv.br.CNPJValidator;
 import org.hibernate.validator.internal.constraintvalidators.hv.br.CPFValidator;

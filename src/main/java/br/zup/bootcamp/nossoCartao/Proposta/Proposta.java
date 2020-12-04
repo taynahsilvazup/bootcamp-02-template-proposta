@@ -1,5 +1,8 @@
 package br.zup.bootcamp.nossoCartao.Proposta;
 
+import br.zup.bootcamp.nossoCartao.Proposta.Converter.StatusPropostaConverter;
+import br.zup.bootcamp.nossoCartao.Proposta.Enum.StatusPropostaEnum;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -37,6 +40,10 @@ public class Proposta {
     @NotNull
     @Positive
     private BigDecimal salario;
+
+    @Column(name = "STATUS")
+    @Convert(converter = StatusPropostaConverter.class)
+    private StatusPropostaEnum status;
 
     @Column(name = "DATA_CADASTRO")
     private final LocalDateTime dataCadastro = LocalDateTime.now();
@@ -78,5 +85,9 @@ public class Proposta {
         this.nome = nome;
         this.endereco = endereco;
         this.salario = salario;
+    }
+
+    public void atualizaStatus(StatusPropostaEnum status) {
+        this.status = status;
     }
 }

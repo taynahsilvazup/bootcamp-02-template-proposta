@@ -1,6 +1,13 @@
 package br.zup.bootcamp.nossoCartao.Proposta;
 
+import br.zup.bootcamp.nossoCartao.Integracao.AnaliseClient;
+import br.zup.bootcamp.nossoCartao.Integracao.Request.AnaliseRequest;
+import br.zup.bootcamp.nossoCartao.Integracao.Response.AnaliseResponse;
+import br.zup.bootcamp.nossoCartao.Proposta.Enum.StatusPropostaEnum;
+import br.zup.bootcamp.nossoCartao.Transacao.ExecutorTransacao;
 import br.zup.bootcamp.nossoCartao.Validator.VerificaCpfCnpjValidator;
+import feign.FeignException.FeignServerException;
+import feign.FeignException.FeignClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 
@@ -21,10 +29,16 @@ import java.net.URI;
 public class PropostaController {
 
     @Autowired
-    PropostaRepository propostaRepository;
+    private PropostaRepository propostaRepository;
+
+/*    @Autowired
+    private ExecutorTransacao executorTransacao;*/
 
     @PersistenceContext
     EntityManager manager;
+
+    @Autowired
+    private AnaliseClient analiseClient;
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {
@@ -32,6 +46,7 @@ public class PropostaController {
     }
 
     @PostMapping("/proposta")
+    @Transactional
     public ResponseEntity<?> criaProposta(@RequestBody @Valid NovaPropostaRequest request, UriComponentsBuilder builder) {
         Proposta possivelProposta = propostaRepository.findByDocumento(request.getDocumento());
 
@@ -40,6 +55,25 @@ public class PropostaController {
         }
 
         Proposta proposta = request.toModel();
+        manager.persist(proposta);
+
+        String documento = proposta.getDocumento();
+        String nome = proposta.getNome();
+        String idProposta = proposta.getId().toString();
+
+        try {
+            AnaliseResponse response = analiseClient.analiseProposta(new AnaliseRequest(documento, nome, idProposta));
+            if (response.semRestricao()) {
+                proposta.atualizaStatus(StatusPropostaEnum.ELEGIVEL);
+            }
+            manager.merge(proposta);
+        } catch (FeignClientException e) {
+            proposta.atualizaStatus(StatusPropostaEnum.NAO_ELEGIVEL);
+            manager.merge(proposta);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CPF se encontra com pendências.");
+        } catch (FeignServerException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Por favor, verifique seus dados.");
+        }
 
         URI location = builder.path("/proposta/{id}")
                 .buildAndExpand(proposta.getId())
