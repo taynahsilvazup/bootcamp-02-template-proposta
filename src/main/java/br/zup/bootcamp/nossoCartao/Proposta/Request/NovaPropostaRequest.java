@@ -1,5 +1,6 @@
-package br.zup.bootcamp.nossoCartao.Proposta;
+package br.zup.bootcamp.nossoCartao.Proposta.Request;
 
+import br.zup.bootcamp.nossoCartao.Proposta.Proposta;
 import org.hibernate.validator.internal.constraintvalidators.hv.br.CNPJValidator;
 import org.hibernate.validator.internal.constraintvalidators.hv.br.CPFValidator;
 import org.springframework.util.Assert;

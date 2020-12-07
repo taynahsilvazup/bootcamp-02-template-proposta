@@ -4,7 +4,8 @@ import br.zup.bootcamp.nossoCartao.Integracao.AnaliseClient;
 import br.zup.bootcamp.nossoCartao.Integracao.Request.AnaliseRequest;
 import br.zup.bootcamp.nossoCartao.Integracao.Response.AnaliseResponse;
 import br.zup.bootcamp.nossoCartao.Proposta.Enum.StatusPropostaEnum;
-import br.zup.bootcamp.nossoCartao.Scheduler.Scheduler;
+import br.zup.bootcamp.nossoCartao.Proposta.Request.NovaPropostaRequest;
+import br.zup.bootcamp.nossoCartao.Proposta.Response.BuscaPropostaResponse;
 import br.zup.bootcamp.nossoCartao.Transacao.ExecutorTransacao;
 import br.zup.bootcamp.nossoCartao.Validator.VerificaCpfCnpjValidator;
 import feign.FeignException.FeignServerException;
@@ -15,18 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 public class PropostaController {
@@ -34,11 +31,8 @@ public class PropostaController {
     @Autowired
     private PropostaRepository propostaRepository;
 
-/*    @Autowired
-    private ExecutorTransacao executorTransacao;*/
-
-    @PersistenceContext
-    EntityManager manager;
+    @Autowired
+    private ExecutorTransacao executorTransacao;
 
     @Autowired
     private AnaliseClient analiseClient;
@@ -50,7 +44,7 @@ public class PropostaController {
         binder.addValidators(new VerificaCpfCnpjValidator());
     }
 
-    @PostMapping("/proposta")
+    @PostMapping("/propostas")
     @Transactional
     public ResponseEntity<?> criaProposta(@RequestBody @Valid NovaPropostaRequest request, UriComponentsBuilder builder) {
         Proposta possivelProposta = propostaRepository.findByDocumento(request.getDocumento());
@@ -60,7 +54,7 @@ public class PropostaController {
         }
 
         Proposta proposta = request.toModel();
-        manager.persist(proposta);
+        executorTransacao.salvaEComita(proposta);
 
         log.info("Proposta {} criada com sucesso.", proposta.getId());
 
@@ -73,11 +67,11 @@ public class PropostaController {
             if (response.semRestricao()) {
                 proposta.atualizaStatus(StatusPropostaEnum.ELEGIVEL);
             }
-            manager.merge(proposta);
+            executorTransacao.atualizaEComita(proposta);
             log.info("Proposta [{}] aguardando criação de cartão.", proposta.getId());
         } catch (FeignClientException e) {
             proposta.atualizaStatus(StatusPropostaEnum.NAO_ELEGIVEL);
-            manager.merge(proposta);
+            executorTransacao.atualizaEComita(proposta);
             log.info("Proposta [{}] não elegível para criação de cartão.", proposta.getId());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CPF se encontra com pendências.");
         } catch (FeignServerException e) {
@@ -89,5 +83,16 @@ public class PropostaController {
                 .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("/propostas/{id}")
+    public ResponseEntity<?> buscaProposta(@PathVariable Long id) {
+        Optional<Proposta> proposta = propostaRepository.findById(id);
+        if(proposta.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Não foi encontrada proposta com o id " +id);
+        }
+        BuscaPropostaResponse response = new BuscaPropostaResponse(proposta.get());
+
+        return ResponseEntity.ok(response);
     }
 }

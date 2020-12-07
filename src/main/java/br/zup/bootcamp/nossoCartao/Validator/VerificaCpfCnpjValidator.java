@@ -1,6 +1,6 @@
 package br.zup.bootcamp.nossoCartao.Validator;
 
-import br.zup.bootcamp.nossoCartao.Proposta.NovaPropostaRequest;
+import br.zup.bootcamp.nossoCartao.Proposta.Request.NovaPropostaRequest;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 

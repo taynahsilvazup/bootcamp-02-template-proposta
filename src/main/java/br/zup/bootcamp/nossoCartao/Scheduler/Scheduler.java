@@ -5,6 +5,7 @@ import br.zup.bootcamp.nossoCartao.Integracao.Response.CartaoResponse;
 import br.zup.bootcamp.nossoCartao.Proposta.Enum.StatusPropostaEnum;
 import br.zup.bootcamp.nossoCartao.Proposta.Proposta;
 import br.zup.bootcamp.nossoCartao.Proposta.PropostaRepository;
+import br.zup.bootcamp.nossoCartao.Transacao.ExecutorTransacao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ import java.util.List;
 @Component
 public class Scheduler {
 
-    @PersistenceContext
-    EntityManager manager;
+    @Autowired
+    private ExecutorTransacao executorTransacao;
 
     @Autowired
     PropostaRepository propostaRepository;
@@ -40,7 +41,7 @@ public class Scheduler {
         for(Proposta proposta : propostas) {
                 CartaoResponse response = cartaoClient.cartao(proposta.getId().toString());
                 proposta.vinculaCartao(response.getId());
-                manager.merge(proposta);
+                executorTransacao.atualizaEComita(proposta);
 
                 log.info("Cartao vinculado a proposta [{}].", proposta.getId());
 
