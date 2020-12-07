@@ -45,6 +45,9 @@ public class Proposta {
     @Convert(converter = StatusPropostaConverter.class)
     private StatusPropostaEnum status;
 
+    @Column(name = "CARTAO")
+    private String cartao;
+
     @Column(name = "DATA_CADASTRO")
     private final LocalDateTime dataCadastro = LocalDateTime.now();
 
@@ -72,6 +75,18 @@ public class Proposta {
         return salario;
     }
 
+    public StatusPropostaEnum getStatus() {
+        return status;
+    }
+
+    public String getCartao() {
+        return cartao;
+    }
+
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+
     @Deprecated
     public Proposta() {
     }
@@ -89,5 +104,9 @@ public class Proposta {
 
     public void atualizaStatus(StatusPropostaEnum status) {
         this.status = status;
+    }
+
+    public void vinculaCartao(String cartao) {
+        this.cartao = cartao;
     }
 }
