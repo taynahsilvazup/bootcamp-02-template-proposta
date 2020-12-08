@@ -1,5 +1,5 @@
 CREATE TABLE proposta (
-    id BIGSERIAL NOT NULL,
+    id VARCHAR(50) NOT NULL,
     nome VARCHAR(160) NOT NULL,
     email VARCHAR(254) NOT NULL,
     documento VARCHAR(400) NOT NULL,

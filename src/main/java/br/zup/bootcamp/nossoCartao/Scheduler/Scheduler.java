@@ -1,5 +1,6 @@
 package br.zup.bootcamp.nossoCartao.Scheduler;
 
+import br.zup.bootcamp.nossoCartao.Cartao.Cartao;
 import br.zup.bootcamp.nossoCartao.Integracao.CartaoClient;
 import br.zup.bootcamp.nossoCartao.Integracao.Response.CartaoResponse;
 import br.zup.bootcamp.nossoCartao.Proposta.Enum.StatusPropostaEnum;
@@ -42,6 +43,9 @@ public class Scheduler {
                 CartaoResponse response = cartaoClient.cartao(proposta.getId().toString());
                 proposta.vinculaCartao(response.getId());
                 executorTransacao.atualizaEComita(proposta);
+
+                Cartao cartao = new Cartao(response.getId());
+                executorTransacao.salvaEComita(cartao);
 
                 log.info("Cartao vinculado a proposta [{}].", proposta.getId());
 

@@ -2,6 +2,7 @@ package br.zup.bootcamp.nossoCartao.Proposta;
 
 import br.zup.bootcamp.nossoCartao.Proposta.Converter.StatusPropostaConverter;
 import br.zup.bootcamp.nossoCartao.Proposta.Enum.StatusPropostaEnum;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -10,14 +11,15 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "PROPOSTA")
 public class Proposta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Type(type="uuid-char")
+    private UUID id = UUID.randomUUID();
 
     @Column(name = "DOCUMENTO", unique = true)
     @NotBlank
@@ -51,7 +53,7 @@ public class Proposta {
     @Column(name = "DATA_CADASTRO")
     private final LocalDateTime dataCadastro = LocalDateTime.now();
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

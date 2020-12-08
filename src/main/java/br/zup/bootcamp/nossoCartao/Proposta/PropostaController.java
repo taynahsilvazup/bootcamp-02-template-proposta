@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class PropostaController {
@@ -86,7 +87,7 @@ public class PropostaController {
     }
 
     @GetMapping("/propostas/{id}")
-    public ResponseEntity<?> buscaProposta(@PathVariable Long id) {
+    public ResponseEntity<?> buscaProposta(@PathVariable UUID id) {
         Optional<Proposta> proposta = propostaRepository.findById(id);
         if(proposta.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Não foi encontrada proposta com o id " +id);

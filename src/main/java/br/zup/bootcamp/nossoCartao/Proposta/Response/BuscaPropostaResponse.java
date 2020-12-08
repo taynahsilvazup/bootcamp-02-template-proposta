@@ -6,10 +6,11 @@ import br.zup.bootcamp.nossoCartao.Proposta.Proposta;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class BuscaPropostaResponse {
 
-    private Long id;
+    private UUID id;
 
     private String documento;
 
@@ -27,7 +28,7 @@ public class BuscaPropostaResponse {
 
     private final LocalDateTime dataCadastro = LocalDateTime.now();
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
