@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/biometrias")
 public class BiometriaController {
 
     @Autowired
@@ -31,7 +32,7 @@ public class BiometriaController {
         binder.addValidators(new BiometriaValidator());
     }
 
-    @PostMapping("/biometrias/{cartaoId}")
+    @PostMapping("/{cartaoId}")
     public ResponseEntity<?> cadastraBiometria(@RequestBody @Valid NovaBiometriaRequest novaBiometriaRequest, @PathVariable UUID cartaoId, UriComponentsBuilder builder){
         Optional<Cartao> cartao = cartaoRepository.findById(cartaoId);
 

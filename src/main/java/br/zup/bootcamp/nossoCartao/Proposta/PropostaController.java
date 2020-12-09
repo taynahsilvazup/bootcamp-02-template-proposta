@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/propostas")
 public class PropostaController {
 
     @Autowired
@@ -45,7 +46,7 @@ public class PropostaController {
         binder.addValidators(new VerificaCpfCnpjValidator());
     }
 
-    @PostMapping("/propostas")
+    @PostMapping
     @Transactional
     public ResponseEntity<?> criaProposta(@RequestBody @Valid NovaPropostaRequest request, UriComponentsBuilder builder) {
         Proposta possivelProposta = propostaRepository.findByDocumento(request.getDocumento());
@@ -86,7 +87,7 @@ public class PropostaController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/propostas/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> buscaProposta(@PathVariable UUID id) {
         Optional<Proposta> proposta = propostaRepository.findById(id);
         if(proposta.isEmpty()) {
