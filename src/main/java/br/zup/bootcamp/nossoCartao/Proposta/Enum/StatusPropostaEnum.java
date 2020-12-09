@@ -2,8 +2,7 @@ package br.zup.bootcamp.nossoCartao.Proposta.Enum;
 
 public enum StatusPropostaEnum {
     ELEGIVEL("ELEGIVEL"),
-    NAO_ELEGIVEL("NAO_ELEGIVEL"),
-    ;
+    NAO_ELEGIVEL("NAO_ELEGIVEL");
 
     private final String value;
 
