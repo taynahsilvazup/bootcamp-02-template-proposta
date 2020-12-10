@@ -35,7 +35,7 @@ public class Scheduler {
 
     @Scheduled(fixedDelay = 50000)
     @Transactional
-    public void verificaCriacaoCartao() {
+    protected void verificaCriacaoCartao() {
         List<Proposta> propostas = propostaRepository.findByStatusAndCartaoIsNull(StatusPropostaEnum.ELEGIVEL);
 
         log.info("Existem {} proposta(s) aguardando cartão.", propostas.size());
