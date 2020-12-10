@@ -3,6 +3,8 @@ package br.zup.bootcamp.nossoCartao.AvisoViagem;
 import br.zup.bootcamp.nossoCartao.AvisoViagem.Request.AvisoViagemRequest;
 import br.zup.bootcamp.nossoCartao.Cartao.Cartao;
 import br.zup.bootcamp.nossoCartao.Cartao.CartaoRepository;
+import br.zup.bootcamp.nossoCartao.Integracao.CartaoClient;
+import br.zup.bootcamp.nossoCartao.Integracao.Response.AvisosResponse;
 import br.zup.bootcamp.nossoCartao.Transacao.ExecutorTransacao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,9 @@ public class AvisoViagemController {
     @Autowired
     ExecutorTransacao executorTransacao;
 
+    @Autowired
+    CartaoClient cartaoClient;
+
     @PostMapping("/{cartaoId}/avisoViagem")
     public ResponseEntity<?> avisoviagem(@PathVariable UUID cartaoId, @RequestBody @Valid AvisoViagemRequest avisoViagemRequest, HttpServletRequest request) {
         Optional<Cartao> cartao = cartaoRepository.findById(cartaoId);
@@ -32,9 +37,14 @@ public class AvisoViagemController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado.");
         }
 
-        AvisoViagem avisoViagem = avisoViagemRequest.toModel(cartao.get(), request.getRemoteAddr(), request.getHeader("User-Agent"));
-        executorTransacao.salvaEComita(avisoViagem);
+        AvisosResponse response = cartaoClient.aviso(cartao.get().getNumero(), avisoViagemRequest);
 
-        return ResponseEntity.ok().build();
+        if(response.isCreated()) {
+            AvisoViagem avisoViagem = avisoViagemRequest.toModel(cartao.get(), request.getRemoteAddr(), request.getHeader("User-Agent"));
+            executorTransacao.salvaEComita(avisoViagem);
+            return ResponseEntity.ok().build();
+        }
+
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Algo de errado ocorreu no sistema de avisos.");
     }
 }

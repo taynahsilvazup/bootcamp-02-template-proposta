@@ -1,6 +1,8 @@
 package br.zup.bootcamp.nossoCartao.Integracao;
 
+import br.zup.bootcamp.nossoCartao.AvisoViagem.Request.AvisoViagemRequest;
 import br.zup.bootcamp.nossoCartao.Integracao.Request.BloqueioRequest;
+import br.zup.bootcamp.nossoCartao.Integracao.Response.AvisosResponse;
 import br.zup.bootcamp.nossoCartao.Integracao.Response.BloqueioResponse;
 import br.zup.bootcamp.nossoCartao.Integracao.Response.CartaoResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,4 +16,7 @@ public interface CartaoClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/cartoes/{id}/bloqueios")
     BloqueioResponse bloqueio(@PathVariable String id, @RequestBody BloqueioRequest bloqueioRequest);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/cartoes/{id}/avisos")
+    AvisosResponse aviso(@PathVariable String id, @RequestBody AvisoViagemRequest avisosRequest);
 }

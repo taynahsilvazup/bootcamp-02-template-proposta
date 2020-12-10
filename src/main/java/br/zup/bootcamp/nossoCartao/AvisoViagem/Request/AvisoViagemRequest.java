@@ -16,16 +16,15 @@ public class AvisoViagemRequest {
     private String destino;
 
     @NotNull
-    @FutureOrPresent
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate dataTermino;
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
+    private LocalDate validoAte;
 
     public String getDestino() {
         return destino;
     }
 
-    public LocalDate getDataTermino() {
-        return dataTermino;
+    public LocalDate getValidoAte() {
+        return validoAte;
     }
 
     @Deprecated
@@ -33,12 +32,12 @@ public class AvisoViagemRequest {
     }
 
     public AvisoViagemRequest(@NotBlank String destino,
-                              @NotNull @FutureOrPresent LocalDate dataTermino) {
+                              @NotNull @FutureOrPresent LocalDate validoAte) {
         this.destino = destino;
-        this.dataTermino = dataTermino;
+        this.validoAte = validoAte;
     }
 
     public AvisoViagem toModel(Cartao cartao, String clientIp, String userAgent) {
-        return new AvisoViagem(cartao, destino, dataTermino, clientIp, userAgent);
+        return new AvisoViagem(cartao, destino, validoAte, clientIp, userAgent);
     }
 }
