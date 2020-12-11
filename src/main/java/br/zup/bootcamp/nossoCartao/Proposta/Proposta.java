@@ -2,6 +2,7 @@ package br.zup.bootcamp.nossoCartao.Proposta;
 
 import br.zup.bootcamp.nossoCartao.Proposta.Converter.StatusPropostaConverter;
 import br.zup.bootcamp.nossoCartao.Proposta.Enum.StatusPropostaEnum;
+import br.zup.bootcamp.nossoCartao.Util.CryptoConverter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class Proposta {
 
     @Column(name = "DOCUMENTO", unique = true)
     @NotBlank
+    @Convert(converter = CryptoConverter.class)
     private String documento;
 
     @Column(name = "EMAIL")
